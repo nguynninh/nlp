@@ -136,3 +136,56 @@ Có hai cách phổ biến để lấy vector biểu diễn cho cả câu:
 1. Lấy vector đầu ra của token [CLS] (token đặc biệt được thêm vào đầu mỗi câu).
 
 2. Lấy trung bình cộng của các vector đầu ra của tất cả các token trong câu (Mean Pooling). Cách này thường cho kết quả tốt hơn.
+
+**Yêu cầu**: Viết code để tính toán vector biểu diễn cho câu This is a sample sentence. bằng phương pháp Mean Pooling.
+
+**Code mẫu**:
+
+```python
+import torch
+from transformers import AutoTokenizer, AutoModel
+3
+
+# 1. Chọn một mô hình BERT
+model_name = "bert-base-uncased"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModel.from_pretrained(model_name)
+
+# 2. Câu đầu vào
+sentences = ["This is a sample sentence."]
+
+# 3. Tokenize câu
+# padding=True: đệm các câu ngắn hơn để có cùng độ dài
+# truncation=True: cắt các câu dài hơn
+# return_tensors='pt': trả về kết quả dưới dạng PyTorch tensors
+inputs = tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')
+
+# 4. Đưa qua mô hình để lấy hidden states
+# torch.no_grad() để không tính toán gradient, tiết kiệm bộ nhớ
+with torch.no_grad():
+outputs = model(**inputs)
+# outputs.last_hidden_state chứa vector đầu ra của tất cả các token
+last_hidden_state = outputs.last_hidden_state
+# shape: (batch_size, sequence_length, hidden_size)
+
+# 5. Thực hiện Mean Pooling
+# Để tính trung bình chính xác, chúng ta cần bỏ qua các token đệm (padding tokens)
+attention_mask = inputs['attention_mask']
+mask_expanded = attention_mask.unsqueeze(-1).expand(last_hidden_state.size()).float()
+sum_embeddings = torch.sum(last_hidden_state * mask_expanded, 1)
+sum_mask = torch.clamp(mask_expanded.sum(1), min=1e-9)
+sentence_embedding = sum_embeddings / sum_mask
+
+# 6. In kết quả
+print("Vector biểu diễn của câu:")
+print(sentence_embedding)
+print("\nKích thước của vector:", sentence_embedding.shape)
+```
+
+**Câu hỏi**:
+1. Kích thước (chiều) của vector biểu diễn là bao nhiêu? Con số này tương ứng với tham số nào của mô hình BERT?
+
+2. Tại sao chúng ta cần sử dụng attention_mask khi thực hiện Mean Pooling?
+
+### 4. Nộp bài
+Hoàn thành các đoạn code và trả lời các câu hỏi trong file notebook/markdown và nộp lại theo hướng dẫn.
