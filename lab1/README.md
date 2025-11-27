@@ -104,3 +104,38 @@ In `src/core/interfaces.py`, define a new abstract base class for a `Vectorizer`
 + The constructor `__init__(self, tokenizer: Tokenizer)` should accept a `Tokenizer` instance (from Lab 1).
 
 + It should have an attribute `vocabulary_` (a `dict[str, int])` to store the `word-to-index` mapping.
+
+3. Implement the `fit` method:
++ Initialize an empty set to hold unique tokens.
+
++ Iterate through each document in the corpus.
+
++ For each document, use the provided `tokenizer` to get a list of tokens.
+
++ Add all tokens to the set to collect a unique vocabulary.
+
++ After processing all documents, create the vocabulary_ dictionary by mapping each unique token to a unique integer index (e.g., by sorting the set and assigning indices).
+
+4. Implement the `transform` method:
+
++ For each document in the input list:
+    + Create a zero vector with a length equal to the size of the vocabulary_.
+    + Tokenize the document.
+    + For each token, if it exists in the vocabulary_, increment the count at the corresponding index in the zero vector.
++ Return the list of resulting vectors.
+
+## Evaluation
++ Create a new test file: test/lab2_test.py.
++ In this file, instantiate your RegexTokenizer from Lab 1.
++ Instantiate your CountVectorizer with the tokenizer.
++ Define a sample corpus:
+
+```python
+corpus = [
+    "I love NLP.",
+    "I love programming.",
+    "NLP is a subfield of AI."
+]
+```
+
++ Use `fit_transform` on the corpus and print the learned vocabulary and the resulting document-term matrix (the list of vectors).
