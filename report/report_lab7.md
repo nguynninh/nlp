@@ -1,8 +1,5 @@
 # Báo cáo Lab 7: Thực hành chuyên sâu về Phân tích cú pháp phụ thuộc (Dependency Parsing)
 
-**Sinh viên:** Ninh Nguyen  
-**Ngày thực hiện:** 4 tháng 12, 2025
-
 ---
 
 ## 1. Giới thiệu
